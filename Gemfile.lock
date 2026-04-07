@@ -1,5 +1,6 @@
-PATH
-  remote: ../..
+GIT
+  remote: https://github.com/bash0C7/picotorokko.git
+  revision: d49fcdcbe55ec05e9c00e61d4fa0f541841c3afb
   specs:
     picotorokko (0.1.0)
       rbs (~> 3.4)
