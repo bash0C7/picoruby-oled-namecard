@@ -1,11 +1,9 @@
-# picoruby-oled-namecard
+# oled
 
-PicoRuby + ATOM MATRIX + OLED display Namecard
+A PicoRuby application for ESP32 development using the `picotorokko` (ptrk) build system.
 
 **Created**: 2025-12-06 21:14:58
 **Author**: bash0C7
-
-# WIP
 
 ## Quick Start
 
@@ -17,29 +15,63 @@ First, fetch the latest repository versions automatically:
 ptrk env set --latest
 ```
 
+Or, create an environment with specific repository commits:
+
+```bash
+ptrk env set main --commit <R2P2-ESP32-hash>
+```
+
+Optionally, specify different commits for picoruby-esp32 and picoruby:
+
+```bash
+ptrk env set main \
+  --commit <R2P2-hash> \
+  --esp32-commit <picoruby-esp32-hash> \
+  --picoruby-commit <picoruby-hash>
+```
+
 ### 2. Build Application
 
 ```bash
-ptrk device prepair
-```
-
-```bash
-ptrk device build
+bundle exec ptrk device build
 ```
 
 This clones repositories, applies patches, and builds firmware for your application.
 
+> **Important — `storage/home/` sync gotcha**
+> `ptrk device build` does **not** re-sync `storage/home/` into the build tree when the build directory already exists. If you add/rename/modify files under `storage/home/` or `mrbgems/applib/`, run `ptrk device prepare` first so the build tree is rebuilt from scratch:
+>
+> ```bash
+> bundle exec ptrk device prepare
+> bundle exec ptrk device build
+> ```
+
 ### 3. Flash to Device
 
 ```bash
-ptrk device flash
+bundle exec ptrk device flash
 ```
+
+The flash baudrate is hard-coded to `150000` inside the R2P2-ESP32 Rakefile (`export ESPBAUD=150000`). Setting `ESP_BAUD` / `ESPBAUD` from the shell has no effect unless the Rakefile is patched.
 
 ### 4. Monitor Serial Output
 
 ```bash
-ptrk device monitor
+bundle exec ptrk device monitor
 ```
+
+## Application Entry Point
+
+R2P2-ESP32 auto-runs `storage/home/app.rb` (or a compiled `app.mrb`) at boot. The current entry point is:
+
+```ruby
+# storage/home/app.rb
+require 'applib'
+Applib.qr
+Applib.icon
+```
+
+Application logic lives in `mrbgems/applib/mrblib/applib.rb`, declared in `Mrbgemfile`.
 
 ## Project Structure
 
@@ -48,6 +80,12 @@ ptrk device monitor
 - **`.cache/`** — Immutable repository snapshots (git-ignored)
 - **`build/`** — Active build working directory (git-ignored)
 - **`.ptrk_env/`** — Environment metadata (git-ignored)
+
+## Documentation
+
+- **`SPEC.md`** — Complete specification of ptrk commands (in picotorokko gem)
+- **`CLAUDE.md`** — Development guidelines and conventions
+- **[picotorokko README](https://github.com/picoruby/picotorokko)** — Gem documentation and examples
 
 ## Common Tasks
 
@@ -68,7 +106,7 @@ ptrk env show main
 After editing files in `build/current/`, export changes:
 
 ```bash
-ptrk env patch export
+ptrk env patch_export main
 ```
 
 Then commit:

@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bundle exec *)",
+      "Bash(bundle config *)",
+      "Bash(bundle install *)",
+      "Bash(ESP_BAUD=115200 bundle exec *)",
+      "Bash(gem which *)",
+      "Bash(bundle info *)",
+      "Bash(gh api *)"
+    ]
+  }
+}

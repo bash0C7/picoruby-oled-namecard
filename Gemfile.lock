@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/bash0C7/picotorokko.git
-  revision: d49fcdcbe55ec05e9c00e61d4fa0f541841c3afb
+  revision: 19ee060143c96a52a9ba49428908c0cbc9e5474c
   specs:
     picotorokko (0.1.0)
       rbs (~> 3.4)

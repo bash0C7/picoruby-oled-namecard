@@ -45,5 +45,6 @@ MRuby::CrossBuild.new("esp32") do |conf|
   conf.gem core: 'picoruby-adafruit_sk6812'
 
   conf.gem github: 'ksbmyk/picoruby-sh1107', branch: 'main'
-  #conf.gem '/Users/bash/src/picotorokko/playground/oled/mrbgems/applib'
+  conf.gem github: 'ksbmyk/picoruby-ws2812', branch: 'main'
+  conf.gem '/Users/bash/src/picoruby-oled-namecard.org/mrbgems/applib'
 end

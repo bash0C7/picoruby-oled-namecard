@@ -4,6 +4,51 @@
 
 This file contains development conventions and setup instructions for PicoRuby application developers using the `picotorokko` build system.
 
+## Project-Specific Gotchas (important — read first)
+
+### Environment config file
+
+The real `.picoruby-env.yml` that ptrk reads lives under `.ptrk_env/.picoruby-env.yml`, **not** the project root. Any empty `.picoruby-env.yml` at the repo root is vestigial and can be removed.
+
+### `ptrk device build` does not re-sync `storage/home/`
+
+`bundle exec ptrk device build` only copies `storage/home/` into the build tree on the **first** build (when `.ptrk_build/<env>/R2P2-ESP32/` does not yet exist). Subsequent builds reuse the copied tree, so file additions, renames, or edits under `storage/home/` or `mrbgems/applib/` **will not** be picked up.
+
+When you modify application sources, always run:
+
+```bash
+bundle exec ptrk device prepare
+bundle exec ptrk device build
+bundle exec ptrk device flash
+```
+
+`prepare` does `FileUtils.rm_rf(build_path)` then `copy_storage_home`. Implementation reference: `picotorokko/lib/picotorokko/commands/device.rb` (method `prepare_build_environment`, guarded by `unless Dir.exist?(build_path)`).
+
+### Flash baudrate is hard-coded
+
+The R2P2-ESP32 `Rakefile` contains `export ESPBAUD=150000`. The shell-provided `ESP_BAUD` / `ESPBAUD` is overridden. Changing baudrate requires patching the Rakefile via `ptrk patch export`.
+
+### Entry point is `app.rb`, not `main.rb`
+
+R2P2-ESP32 auto-runs `storage/home/app.rb` (or a pre-compiled `app.mrb`) at boot. The docs elsewhere that reference `main.rb` are inaccurate for this project.
+
+### picoruby-ws2812 (ksbmyk fork) v2 API
+
+The ws2812 gem was migrated from the `WS2812.new(RMTDriver.new(pin))` interface to a keyword-argument constructor. `RMTDriver` is no longer exposed from the gem.
+
+```ruby
+# old (removed)
+led = WS2812.new(RMTDriver.new(27))
+led.show_hex(*colors)
+
+# new
+led = WS2812.new(pin: 27, num: 25)
+colors.each_with_index { |hex, i| led.set_hex(i, hex) }
+led.show
+```
+
+Per-LED setters: `set_rgb(i, r, g, b)`, `set_hex(i, hex)`, `set_hsb(i, h, s, b)`. Utilities: `fill(r, g, b)`, `clear`, `brightness=`, `close`. Commit buffer with `show`.
+
 ## Project Setup
 
 **Project Name**: oled
