@@ -1,6 +1,7 @@
 # ptrk project directories
 .cache/
 build/
+.ptrk_build/
 .ptrk_env/*/
 # But keep .gitkeep files for directory structure
 !.ptrk_env/.gitkeep
